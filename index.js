@@ -34,17 +34,34 @@ function run() {
         res.send(result);
     })
 
-    app.post('/completed', async(req, res)=>{
-        const task = req.body.completedTask;
+    app.get('/completed', async(req, res)=>{
+        const id = req.query.id;
+        const query = {_id:ObjectId(id)}
+        const task = await tasksCollection.findOne(query);
         delete task._id;
-        const result =await completedTasksCollection.insertOne(task);
+        const post = completedTasksCollection.insertOne(task);
+        const result = await tasksCollection.deleteOne(query);
         res.send(result);
     })
-
+   
     app.get('/mytasks', async(req, res) =>{
         const email = req.query.email;
         const query = {email: email};
         const result = await tasksCollection.find(query).toArray();
+        res.send(result);
+    })
+
+    app.get('/completedTask', async(req, res) =>{
+        const email = req.query.email;
+        const query = {email: email};
+        const result = await completedTasksCollection.find(query).toArray();
+        res.send(result);
+    })
+
+    app.delete('/delete', async(req, res)=> {
+        const id = req.query.id;
+        const query = {_id: ObjectId(id)};
+        const result = await tasksCollection.deleteOne(query);
         res.send(result);
     })
 
